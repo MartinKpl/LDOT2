@@ -17,11 +17,16 @@ def nyxquery_sites_json():
     f = open("./../nyxquery-examples/sitelist.json", "r")
     return f.read()
 
-def getSiteIps(site: str):
+def getSiteIps(site: str, filter: str = ""):
     rawIps = json.loads(nyxquery_site_ips_json(site))
     ips = []
     for name in rawIps:
-        ips.append([0000, rawIps[name]["ip"], name.split(".")[0]])
+        cleanName = name.split(".")[0]
+        if filter != "":
+            if filter in cleanName or filter in "0000":
+                ips.append(["0000", rawIps[name]["ip"], cleanName])
+        else:
+            ips.append(["0000", rawIps[name]["ip"], cleanName])
 
     return ips
 

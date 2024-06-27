@@ -21,7 +21,18 @@ class MainWindow(QtWidgets.QMainWindow):
         make_combo_box_searchable(combo)
         combo.currentIndexChanged.connect(self.siteComboChanged)
 
-        layout.addWidget(combo)
+        upperLayout = QHBoxLayout()
+        upperLayout.addWidget(combo, 50)
+
+        lineEdit = QtWidgets.QLineEdit()
+        lineEdit.textChanged.connect(self.filterMachines)
+
+        upperLayout.addWidget(lineEdit, 50)
+
+        upperWidget = QtWidgets.QWidget()
+        upperWidget.setLayout(upperLayout)
+
+        layout.addWidget(upperWidget)
 
         data = getSiteIps("")
 
@@ -44,17 +55,18 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.adjustWindowSize()
 
-    # def btnClicked(self):
-        # self.model = TableModel(da, ["Code", "Ip", "Name"])
-        # self.table.setModel(self.model)
-        # self.adjustWindowSize()
     def siteComboChanged(self, index):
         print(self.sites[index])
+
+    def filterMachines(self, s):
+        self.model = TableModel(getSiteIps("", s), ["Code", "Ip", "Name"])
+        self.table.setModel(self.model)
+
     def adjustWindowSize(self):
         width = self.table.verticalHeader().width() + self.table.horizontalHeader().length() + self.table.frameWidth() * 2 + 40
         height = self.table.horizontalHeader().height() + self.table.verticalHeader().length() + self.table.frameWidth() * 2 + 20
         self.setMinimumSize(width, height if height < 920 else 920)
-        self.resize(width, height if height < 920 else 920)
+        self.resize(width+150, height if height < 920 else 920)
 
     def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection):
         for index in selected.indexes():
