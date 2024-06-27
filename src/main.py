@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QItemSelection
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 from TableModel import TableModel
 from utils import getSiteIps, getSites, make_combo_box_searchable
 

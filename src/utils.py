@@ -1,7 +1,6 @@
-import json
+import json, os, sys
 
 from PyQt5 import QtCore, QtWidgets
-
 
 class Machine:
     def __init__(self, code, ip, name):
@@ -9,13 +8,28 @@ class Machine:
         self.ip = ip
         self.name = name
 
+def resource_path(relative_path):
+    """ Get the absolute path to the resource, works for dev and for PyInstaller """
+    # Determine if we are running in a PyInstaller bundle
+    if getattr(sys, 'frozen', False):
+        # Running in PyInstaller bundle
+        base_path = sys._MEIPASS
+    else:
+        # Running in development mode
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        # Adjust the path to point to the project root
+        base_path = os.path.abspath(os.path.join(base_path, '..'))
+    return os.path.join(base_path, relative_path)
+
 def nyxquery_site_ips_json(site: str):
-    f = open("./../nyxquery-examples/ips_example.json", "r")
-    return f.read()
+    json_file_path = resource_path("nyxquery-examples/ips_example.json")
+    with open(json_file_path, "r") as f:
+        return f.read()
 
 def nyxquery_sites_json():
-    f = open("./../nyxquery-examples/sitelist.json", "r")
-    return f.read()
+    json_file_path = resource_path("nyxquery-examples/sitelist.json")
+    with open(json_file_path, "r") as f:
+        return f.read()
 
 def getSiteIps(site: str, filter: str = ""):
     rawIps = json.loads(nyxquery_site_ips_json(site))
