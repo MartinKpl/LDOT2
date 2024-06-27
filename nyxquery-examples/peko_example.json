@@ -1,0 +1,220 @@
+{
+   "win-ums-privil-peko-03.winnerc8.ptec" : {
+      "packages" : [
+         "payments_apps",
+         "payments_peko",
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "uptime" : "526 days",
+      "domain" : "winnerc8.ptec",
+      "site" : "WINNER",
+      "roles" : [
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko",
+         "infra_docker",
+         "infra_openjdk",
+         "payments_apps",
+         "security_falcon"
+      ],
+      "os" : "CentOS",
+      "addresses" : [
+         "10.152.0.1",
+         "10.207.193.98",
+         "172.28.217.98",
+         "94.190.159.32"
+      ],
+      "timezone" : "GMT",
+      "web_services" : [],
+      "fqdn" : "win-ums-privil-peko-03.winnerc8.ptec",
+      "status" : "In Production",
+      "cmdb_site_name" : "WINNER",
+      "osrelease" : "7.9.2009",
+      "outgoing_ip" : "94.190.159.32",
+      "ip" : "10.207.193.98",
+      "javaservers" : [
+         "peko3.winner.com",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "support_group" : "IMS Fraud and Payments",
+      "modified" : 1718307368,
+      "nfsmounts" : [
+         {
+            "path" : "/appslogs_winnerc8_ptec_ims",
+            "available_bytes" : 17371895431168,
+            "protocol" : "tcp",
+            "size_bytes" : 32985348833280,
+            "remote" : "10.216.254.42",
+            "version" : "3",
+            "device" : "mitmega-nas-01.infra.ptec:/appslogs_winnerc8_ptec_ims"
+         }
+      ]
+   },
+   "win-ums-privil-peko-01.winnerc8.ptec" : {
+      "ip" : "10.207.193.68",
+      "outgoing_ip" : "94.190.159.32",
+      "support_group" : "IMS Fraud and Payments",
+      "nfsmounts" : [
+         {
+            "version" : "3",
+            "device" : "mitmega-nas-01.infra.ptec:/appslogs_winnerc8_ptec_ims",
+            "remote" : "10.216.254.46",
+            "size_bytes" : 32985348833280,
+            "protocol" : "tcp",
+            "available_bytes" : 17305892028416,
+            "path" : "/appslogs_winnerc8_ptec_ims"
+         }
+      ],
+      "modified" : 1718319189,
+      "javaservers" : [
+         "peko1.winner.com",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "cmdb_site_name" : "WINNER",
+      "status" : "In Production",
+      "osrelease" : "7.9.2009",
+      "os" : "CentOS",
+      "web_services" : [],
+      "fqdn" : "win-ums-privil-peko-01.winnerc8.ptec",
+      "timezone" : "GMT",
+      "addresses" : [
+         "10.152.0.1",
+         "10.207.193.68",
+         "172.28.217.68",
+         "94.190.159.32"
+      ],
+      "domain" : "winnerc8.ptec",
+      "packages" : [
+         "payments_apps",
+         "payments_peko",
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "uptime" : "526 days",
+      "roles" : [
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko",
+         "infra_docker",
+         "infra_openjdk",
+         "payments_apps",
+         "security_falcon"
+      ],
+      "site" : "WINNER"
+   },
+   "win-ums-privil-peko-02.winnerc8.ptec" : {
+      "osrelease" : "7.9.2009",
+      "cmdb_site_name" : "WINNER",
+      "status" : "In Production",
+      "nfsmounts" : [
+         {
+            "size_bytes" : 32985348833280,
+            "remote" : "10.216.254.43",
+            "device" : "mitmega-nas-01.infra.ptec:/appslogs_winnerc8_ptec_ims",
+            "version" : "3",
+            "path" : "/appslogs_winnerc8_ptec_ims",
+            "available_bytes" : 17309569384448,
+            "protocol" : "tcp"
+         }
+      ],
+      "modified" : 1718318542,
+      "support_group" : "IMS Fraud and Payments",
+      "javaservers" : [
+         "peko2.winner.com",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "ip" : "10.207.193.69",
+      "outgoing_ip" : "94.190.159.32",
+      "site" : "WINNER",
+      "roles" : [
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko",
+         "infra_docker",
+         "infra_openjdk",
+         "payments_apps",
+         "security_falcon"
+      ],
+      "domain" : "winnerc8.ptec",
+      "uptime" : "526 days",
+      "packages" : [
+         "payments_apps",
+         "payments_peko",
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "fqdn" : "win-ums-privil-peko-02.winnerc8.ptec",
+      "web_services" : [],
+      "addresses" : [
+         "10.152.0.1",
+         "10.207.193.69",
+         "172.28.217.69",
+         "94.190.159.32"
+      ],
+      "timezone" : "GMT",
+      "os" : "CentOS"
+   },
+   "win-ums-privil-peko-04.winnerc8.ptec" : {
+      "site" : "WINNER",
+      "roles" : [
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko",
+         "infra_docker",
+         "infra_openjdk",
+         "payments_apps",
+         "security_falcon"
+      ],
+      "packages" : [
+         "payments_apps",
+         "payments_peko",
+         "core_apps",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "uptime" : "526 days",
+      "domain" : "winnerc8.ptec",
+      "addresses" : [
+         "10.152.0.1",
+         "10.207.193.99",
+         "172.28.217.99",
+         "94.190.159.32"
+      ],
+      "timezone" : "GMT",
+      "web_services" : [],
+      "fqdn" : "win-ums-privil-peko-04.winnerc8.ptec",
+      "os" : "CentOS",
+      "osrelease" : "7.9.2009",
+      "status" : "In Production",
+      "cmdb_site_name" : "WINNER",
+      "javaservers" : [
+         "peko3.winner.com",
+         "peko4.winner.com",
+         "ims_payments_webapi",
+         "ims_peko"
+      ],
+      "support_group" : "IMS Fraud and Payments",
+      "modified" : 1718309712,
+      "nfsmounts" : [
+         {
+            "path" : "/appslogs_winnerc8_ptec_ims",
+            "available_bytes" : 17360435544064,
+            "protocol" : "tcp",
+            "size_bytes" : 32985348833280,
+            "remote" : "10.216.254.43",
+            "device" : "mitmega-nas-01.infra.ptec:/appslogs_winnerc8_ptec_ims",
+            "version" : "3"
+         }
+      ],
+      "outgoing_ip" : "94.190.159.32",
+      "ip" : "10.207.193.99"
+   }
+}
+
