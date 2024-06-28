@@ -2,17 +2,18 @@ import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QItemSelection
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
+
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from TableModel import TableModel
 from utils import getSiteIps, getSites, make_combo_box_searchable
+from HotkeyWindow import HotkeyWindow
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.table = QtWidgets.QTableView()
 
         layout = QVBoxLayout()
 
@@ -37,6 +38,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         data = getSiteIps("")
 
+        self.table = QtWidgets.QTableView()
+
         self.model = TableModel(data, ["Code", "IP", "Name"])
         self.table.setModel(self.model)
 
@@ -47,14 +50,35 @@ class MainWindow(QtWidgets.QMainWindow):
         self.table.selectionModel().selectionChanged.connect(self.selectionChanged)
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
+        self.table.horizontalHeader().setStretchLastSection(True)
+        self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
         layout.addWidget(self.table)
+
+        lowerLayout = QHBoxLayout()
+
+        newPSButton = QtWidgets.QPushButton("New PS")
+
+        hotkeysButton = QtWidgets.QPushButton("Hotkeys")
+        hotkeysButton.clicked.connect(self.openHotkeyWindow)
+
+        lowerLayout.addWidget(newPSButton)
+        lowerLayout.addWidget(hotkeysButton)
+
+        lowerWidget = QtWidgets.QWidget()
+        lowerWidget.setLayout(lowerLayout)
+        layout.addWidget(lowerWidget)
 
         widget = QWidget()
         widget.setLayout(layout)
         self.setCentralWidget(widget)
 
         self.adjustWindowSize()
+
+    def openHotkeyWindow(self):
+        self.w = HotkeyWindow()
+        self.w.show()
+
 
     def siteComboChanged(self, index):
         print(self.sites[index])
