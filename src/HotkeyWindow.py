@@ -1,4 +1,5 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QDataWidgetMapper, QDialog, QHBoxLayout, QPushButton
 
 from HotkeysTable import HotkeysTable
@@ -17,12 +18,12 @@ class HotkeyWindow(QMainWindow):
 
         self.table = QtWidgets.QTableView()
 
-        data = [
+        self.data = [
             ["sudo su - apps", True, "F2"],
             ["sudo su - playtech", False, "F4"]
         ]
 
-        self.model = HotkeysTable(data)
+        self.model = HotkeysTable(self.data, ["Command", "Active", "Hotkey"])
         self.table.setModel(self.model)
 
         # Make the table expand to fill the window
@@ -36,14 +37,17 @@ class HotkeyWindow(QMainWindow):
         self.table.resizeRowsToContents()
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
-        layout.addWidget(self.table)
-
         self.table.doubleClicked.connect(self.showEditDialog)
+
+        layout.addWidget(self.table)
 
         buttonsLayout = QHBoxLayout()
         addHotkeyButton = QPushButton("Add Hotkey")
         modifyHotkeyButton = QPushButton("Modify Hotkey")
         deleteHotkeyButton = QPushButton("Delete Hotkey")
+
+        addHotkeyButton.clicked.connect(self.showNewHotkeyDialog)
+        deleteHotkeyButton.clicked.connect(self.deleteNewHotkey)
 
         buttonsLayout.addWidget(addHotkeyButton)
         buttonsLayout.addWidget(modifyHotkeyButton)
@@ -70,7 +74,22 @@ class HotkeyWindow(QMainWindow):
         dialog.resize(450, 250)
 
         dialog.exec_()
-        # if dialog.exec_() == QDialog.Accepted:
-            # self.model.setData(self.model.index(index.row(), 0), dialog.line_edit.text())
-            # self.model.setData(self.model.index(index.row(), 1), dialog.check_box.isChecked())
-            # self.model.setData(self.model.index(index.row(), 2), dialog.combo_box.currentText())
+
+    def showNewHotkeyDialog(self):
+        dialog = HotkeyDialog(self)
+
+        dialog.resize(450, 250)
+
+        # dialog.exec_()
+        self.model.insertRows(self.model.rowCount(), 1)
+        if dialog.exec_() == QDialog.Accepted:
+            lastIndex = len(self.data) - 1
+            self.model.setData(self.model.index(lastIndex, 0), dialog.line_edit.text(), Qt.EditRole)
+            self.model.setData(self.model.index(lastIndex, 1), dialog.check_box.isChecked(), Qt.EditRole)
+            self.model.setData(self.model.index(lastIndex, 2), dialog.combo_box.currentText(), Qt.EditRole)
+
+    def deleteNewHotkey(self):
+        selectedRowsIndexes = sorted(set(index.row() for index in self.table.selectionModel().selectedIndexes()), reverse=True)
+        print(selectedRowsIndexes)
+        for index in selectedRowsIndexes:
+            self.model.removeRow(index)

@@ -4,12 +4,14 @@ from PyQt5.QtWidgets import QDialog, QLineEdit, QVBoxLayout, QCheckBox, QComboBo
 class HotkeyDialog(QDialog):
     def __init__(self, parent=None):
         super(HotkeyDialog, self).__init__(parent)
-        self.setWindowTitle("Edit Row")
+        self.setWindowTitle("Hotkey")
 
         self.line_edit = QLineEdit()
         self.check_box = QCheckBox()
         self.combo_box = QComboBox()
-        self.combo_box.addItems(["F"+str(n+1) for n in range(12)])
+        comboItems =["F"+str(n+1) for n in range(12)]
+        comboItems.insert(0, "None")
+        self.combo_box.addItems(comboItems)
 
         layout = QVBoxLayout()
 
