@@ -39,7 +39,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         layout.addWidget(upperWidget)
 
-        self.data = getSiteIps("")
+        self.data = getSiteIps(self.site)
 
         self.table = QtWidgets.QTableView()
 
