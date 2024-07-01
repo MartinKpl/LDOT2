@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from TableModel import TableModel
-from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH
+from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps
 from HotkeyWindow import HotkeyWindow
 
 MAIN_TABLE_HEADER = ["Ip", "Name"]
@@ -101,13 +101,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.table.setModel(self.model)
 
     def filterMachines(self, s):
-        self.model = TableModel(getSiteIps(self.site, s), MAIN_TABLE_HEADER)
+        self.model = TableModel(filterIps(self.data, s), MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
     def adjustWindowSize(self):
         width = self.table.verticalHeader().width() + self.table.horizontalHeader().length() + self.table.frameWidth() * 2 + 40
         height = self.table.horizontalHeader().height() + self.table.verticalHeader().length() + self.table.frameWidth() * 2 + 20
-        self.setMinimumSize(width, height if height < 920 else 920)
+        # self.setMinimumSize(width, height if height < 920 else 920)
         self.resize(width+150, height if height < 920 else 920)
 
     def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection):

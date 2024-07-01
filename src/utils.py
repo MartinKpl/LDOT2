@@ -37,7 +37,7 @@ def nyxquery_sites_json():
         return f.read()
 
 
-def getSiteIps(site: str, filter: str = "") -> list:
+def getSiteIps(site: str) -> list:
     use_mock = os.getenv('USE_MOCK', 'false').lower() == 'true'
     ips = []
 
@@ -50,11 +50,21 @@ def getSiteIps(site: str, filter: str = "") -> list:
 
     for name in rawIps:
         cleanName = name.split(".")[0]
+        ips.append([rawIps[name]["ip"], cleanName])
+
+    return ips
+
+
+def filterIps(rawIps: list, filter: str = "") -> list:
+    ips = []
+    for pair in rawIps:
+        ip = pair[0]
+        name = pair[1]
         if filter != "":
-            if filter in cleanName:
-                ips.append([rawIps[name]["ip"], cleanName])
+            if filter in name:
+                ips.append([ip, name])
         else:
-            ips.append([rawIps[name]["ip"], cleanName])
+            ips.append([ip, name])
 
     return ips
 
