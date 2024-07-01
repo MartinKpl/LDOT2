@@ -45,7 +45,7 @@ def getSiteIps(site: str, filter: str = "") -> list:
         print("Using mock for nyxquery")
         rawIps = json.loads(nyxquery_site_ips_json(site))
     else:
-        result = subprocess.run(f"nyxquey --site {site} --json", shell=True, capture_output=True, text=True)
+        result = subprocess.run(f"nyxquery --site {site} --json", shell=True, capture_output=True, text=True)
         rawIps = json.loads(result.stdout)
 
     for name in rawIps:
@@ -66,7 +66,7 @@ def getSites():
     if use_mock:
         rawSites = json.loads(nyxquery_sites_json())
     else:
-        result = subprocess.run(f"nyxquey --site-list --json", shell=True, capture_output=True, text=True)
+        result = subprocess.run(f"nyxquery --site-list --json", shell=True, capture_output=True, text=True)
         rawSites = json.loads(result.stdout)
 
     return list(rawSites.keys())
