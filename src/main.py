@@ -97,6 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def siteComboChanged(self, index):
         print(self.sites[index])
+        self.site = self.sites[index]
         self.model = TableModel(getSiteIps(self.site), MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
