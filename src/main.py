@@ -1,14 +1,16 @@
 import sys, os
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt, QItemSelection
+from PyQt5.QtCore import Qt, QItemSelection, QModelIndex
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from TableModel import TableModel
-from utils import getSiteIps, getSites, make_combo_box_searchable
+from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH
 from HotkeyWindow import HotkeyWindow
+
+MAIN_TABLE_HEADER = ["Ip", "Name"]
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -19,6 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         combo = QtWidgets.QComboBox()
         self.sites = getSites()
+        self.site = self.sites[0]
         combo.addItems(self.sites)
         make_combo_box_searchable(combo)
         combo.currentIndexChanged.connect(self.siteComboChanged)
@@ -36,34 +39,37 @@ class MainWindow(QtWidgets.QMainWindow):
 
         layout.addWidget(upperWidget)
 
-        data = getSiteIps("")
+        self.data = getSiteIps("")
 
         self.table = QtWidgets.QTableView()
 
-        self.model = TableModel(data, ["Code", "IP", "Name"])
+        self.model = TableModel(self.data, ["IP", "Name"])
         self.table.setModel(self.model)
 
         self.setCentralWidget(self.table)
 
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
 
-        self.table.selectionModel().selectionChanged.connect(self.selectionChanged)
+        # self.table.selectionModel().selectionChanged.connect(self.selectionChanged)
         self.table.resizeColumnsToContents()
         self.table.resizeRowsToContents()
         self.table.horizontalHeader().setStretchLastSection(True)
         self.table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
 
+        self.table.doubleClicked.connect(self.startSingleConnection)
+
         layout.addWidget(self.table)
 
         lowerLayout = QHBoxLayout()
 
-        newPSButton = QtWidgets.QPushButton("New PS")
-
         hotkeysButton = QtWidgets.QPushButton("Hotkeys")
         hotkeysButton.clicked.connect(self.openHotkeyWindow)
 
-        lowerLayout.addWidget(newPSButton)
+        newPSButton = QtWidgets.QPushButton("New PS")
+        newPSButton.clicked.connect(self.startParallelSession)
+
         lowerLayout.addWidget(hotkeysButton)
+        lowerLayout.addWidget(newPSButton)
 
         lowerWidget = QtWidgets.QWidget()
         lowerWidget.setLayout(lowerLayout)
@@ -75,16 +81,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.adjustWindowSize()
 
+    def startSingleConnection(self, index: QModelIndex) -> None:
+        ip = self.data[index.row()][0]
+        openSSH(ip)
+
+    def startParallelSession(self):
+        selected = self.table.selectedIndexes()
+
+        if len(selected) > 0:
+            openCSSH(list(set([self.data[index.row()][0] for index in selected])))
+
     def openHotkeyWindow(self):
         self.w = HotkeyWindow()
         self.w.show()
 
-
     def siteComboChanged(self, index):
         print(self.sites[index])
+        self.model = TableModel(getSiteIps(self.site), MAIN_TABLE_HEADER)
+        self.table.setModel(self.model)
 
     def filterMachines(self, s):
-        self.model = TableModel(getSiteIps("", s), ["Code", "Ip", "Name"])
+        self.model = TableModel(getSiteIps(self.site, s), MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
     def adjustWindowSize(self):
