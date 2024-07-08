@@ -1,13 +1,14 @@
 import sys, os
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QItemSelection, QModelIndex
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
-
+from pynput import keyboard
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from TableModel import TableModel
-from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps
+from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json
 from HotkeyWindow import HotkeyWindow
 
 MAIN_TABLE_HEADER = ["Ip", "Name"]
@@ -81,6 +82,22 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.adjustWindowSize()
 
+        self.controller = keyboard.Controller()
+        self.listener = keyboard.Listener(on_press=self.onKeyPress)
+        self.listener.start()
+
+    def onKeyPress(self, event):
+        try:
+            print(f'Key pressed: {event.name}')
+            if event.name[0] != "f":
+                return
+
+            for hotkey in read_json()["hotkeys"]:
+                if str(hotkey[2]).lower() == event.name.lower() and hotkey[1]:
+                    self.controller.type(hotkey[0])
+        except Exception as e:
+            print(f"error: {e}")
+
     def startSingleConnection(self, index: QModelIndex) -> None:
         ip = self.data[index.row()][0]
         openSSH(ip)
@@ -98,7 +115,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def siteComboChanged(self, index):
         print(self.sites[index])
         self.site = self.sites[index]
-        self.model = TableModel(getSiteIps(self.site), MAIN_TABLE_HEADER)
+        self.data = getSiteIps(self.site)
+        self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
     def filterMachines(self, s):
@@ -118,8 +136,13 @@ class MainWindow(QtWidgets.QMainWindow):
         for index in deselected.indexes():
             print(f'Deselected: row {index.row()}, column {index.column()}, value: {index.data()}')
 
+    def closeEvent(self, event):
+        # Unhook all key listeners when closing the window
+        self.listener.stop()
+        event.accept()
 
-app=QtWidgets.QApplication(sys.argv)
-window=MainWindow()
+
+app = QtWidgets.QApplication(sys.argv)
+window = MainWindow()
 window.show()
 app.exec_()

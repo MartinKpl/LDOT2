@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QDataWidgetMapper
 
 from HotkeysTable import HotkeysTable
 from HotkeyDialog import HotkeyDialog
+from utils import read_json, write_json
 
 
 class HotkeyWindow(QMainWindow):
@@ -18,10 +19,7 @@ class HotkeyWindow(QMainWindow):
 
         self.table = QtWidgets.QTableView()
 
-        self.data = [
-            ["sudo su - apps", True, "F2"],
-            ["sudo su - playtech", False, "F4"]
-        ]
+        self.data = read_json()["hotkeys"]
 
         self.model = HotkeysTable(self.data, ["Command", "Active", "Hotkey"])
         self.table.setModel(self.model)
@@ -93,3 +91,10 @@ class HotkeyWindow(QMainWindow):
         print(selectedRowsIndexes)
         for index in selectedRowsIndexes:
             self.model.removeRow(index)
+
+    def closeEvent(self, event):
+        hotkeys = self.model.getModelData()
+        data = read_json()
+        data["hotkeys"] = hotkeys
+        write_json(data)
+        QMainWindow.closeEvent(self, event)

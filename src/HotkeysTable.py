@@ -31,7 +31,7 @@ class HotkeysTable(QtCore.QAbstractTableModel):
     def columnCount(self, index):
         # The following takes the first sub-list, and returns
         # the length (only works if all rows are an equal length)
-        return len(self._data[0])
+        return len(self._data[0]) if len(self._data) > 0 else 0
 
     def headerData(self, section, orientation, role):
         if role == Qt.DisplayRole and orientation == Qt.Horizontal and len(self._data) > 0 and len(self._header) == len(self._data[0]):
@@ -64,3 +64,6 @@ class HotkeysTable(QtCore.QAbstractTableModel):
         self.endRemoveRows()
 
         return True
+
+    def getModelData(self):
+        return self._data

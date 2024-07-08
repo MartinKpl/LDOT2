@@ -110,3 +110,46 @@ def openCSSH(ips: List[str]):
     print(ips)
     if sys.platform == 'linux':
         os.system(f"gnome-terminal -- bash -c 'cssh {' '.join(ips)}; exec bash'")
+
+
+def get_json_file_path():
+    home_dir = os.path.expanduser('~')
+    json_file = os.path.join(home_dir, 'ldot2data.json')
+    return json_file
+
+
+initializedData = []
+
+
+def read_json():
+    # Ensure the directory exists
+    file_path = get_json_file_path()
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    # Check if the file exists, and create it with default content if not
+    if not os.path.exists(file_path) and not initializedData:
+        with open(file_path, 'w') as file:
+            default_data = {'hotkeys': []}  # Define your default data here
+            json.dump(default_data, file, indent=4)
+
+    # Read the JSON data
+    try:
+        if not initializedData:
+            with open(file_path, 'r') as file:
+                data = json.load(file)
+                return data
+        else:
+            return initializedData
+
+    except IOError as e:
+        print(f"Error reading file {file_path}: {e}")
+        return {}
+
+
+def write_json(data):
+    file_path = get_json_file_path()
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+    except IOError as e:
+        print(f"Error writing to file {file_path}: {e}")
