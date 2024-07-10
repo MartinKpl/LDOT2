@@ -99,6 +99,7 @@ def make_combo_box_searchable(combo_box):
 
 
 def openSSH(ip: str):
+    print(f"Will ssh ip {ip}")
     if sys.platform == 'win32':
         os.system(f"start cmd /k ssh {ip}")
     else:

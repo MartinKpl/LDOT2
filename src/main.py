@@ -88,12 +88,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def onKeyPress(self, event):
         try:
-            print(f'Key pressed: {event.name}')
             if event.name[0] != "f":
                 return
 
             for hotkey in read_json()["hotkeys"]:
                 if str(hotkey[2]).lower() == event.name.lower() and hotkey[1]:
+                    print(hotkey[2] + "pressed")
                     self.controller.type(hotkey[0])
         except Exception as e:
             print(f"error: {e}")
@@ -120,7 +120,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.table.setModel(self.model)
 
     def filterMachines(self, s):
-        self.model = TableModel(filterIps(self.data, s), MAIN_TABLE_HEADER)
+        self.data = filterIps(self.data, s)
+        self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
     def adjustWindowSize(self):
