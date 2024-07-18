@@ -56,6 +56,7 @@ def getSiteIps(site: str) -> list:
 
 
 def filterIps(rawIps: list, filter: str = "") -> list:
+    print(f"Filtering {filter}")
     ips = []
     for pair in rawIps:
         ip = pair[0]
@@ -79,7 +80,10 @@ def getSites():
         result = subprocess.run(f"nyxquery --site-list --json", shell=True, capture_output=True, text=True)
         rawSites = json.loads(result.stdout)
 
-    return list(rawSites.keys())
+    sites = list(rawSites.keys())
+    sites.sort()
+
+    return sites
 
 
 def make_combo_box_searchable(combo_box):

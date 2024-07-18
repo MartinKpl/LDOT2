@@ -41,6 +41,7 @@ class MainWindow(QtWidgets.QMainWindow):
         layout.addWidget(upperWidget)
 
         self.data = getSiteIps(self.site)
+        self.wholeData = self.data
 
         self.table = QtWidgets.QTableView()
 
@@ -88,7 +89,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def onKeyPress(self, event):
         try:
-            if event.name[0] != "f":
+            if isinstance(event, keyboard.Key) and event.name[0] != "f":
                 return
 
             for hotkey in read_json()["hotkeys"]:
@@ -116,11 +117,12 @@ class MainWindow(QtWidgets.QMainWindow):
         print(self.sites[index])
         self.site = self.sites[index]
         self.data = getSiteIps(self.site)
+        self.wholeData = self.data
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
     def filterMachines(self, s):
-        self.data = filterIps(self.data, s)
+        self.data = filterIps(self.wholeData, s)
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
