@@ -56,7 +56,7 @@ def getSiteIps(site: str) -> list:
 
 
 def filterIps(rawIps: list, filter: str = "") -> list:
-    print(f"Filtering {filter}")
+    #print(f"Filtering {filter}")
     ips = []
     for pair in rawIps:
         ip = pair[0]
