@@ -1,0 +1,57 @@
+To build your Python project for Linux using PyInstaller on Windows 11 with WSL, follow these steps:
+
+### Step 1: Install WSL and a Linux Distribution
+1. **Enable WSL**:
+   Open PowerShell as Administrator and run:
+   ```sh
+   wsl --install
+   ```
+
+2. **Install a Linux distribution**:
+   After WSL is enabled, you need to install a Linux distribution (e.g., Ubuntu) from the Microsoft Store.
+
+### Step 2: Set Up Your Linux Environment in WSL
+1. **Launch your Linux distribution**:
+   Open your newly installed Linux distribution from the Start menu.
+
+2. **Update package lists**:
+   ```sh
+   sudo apt update
+   sudo apt upgrade
+   ```
+
+3. **Install Python and pip**:
+   ```sh
+   sudo apt install python3 python3-pip
+   ```
+
+4. **Install PyInstaller**:
+   ```sh
+   pip3 install pyinstaller
+   ```
+
+### Step 3: Prepare Your Python Project
+1. **Navigate to your project directory**:
+   Use the `cd` command to navigate to your Python project's directory. If your project is on your Windows filesystem, you can access it via `/mnt/c` (e.g., if your project is in `C:\Users\YourName\Project`, navigate to it using `cd /mnt/c/Users/YourName/Project`).
+
+### Step 4: Build Your Project with PyInstaller
+1. **Run PyInstaller**:
+   Use PyInstaller to create a Linux executable. For example:
+   ```sh
+   pyinstaller --onefile your_script.py
+   ```
+
+   This will generate a `dist` directory with the executable file inside it.
+
+### Step 5: Access Your Built Executable
+1. **Find the executable**:
+   The executable will be located in the `dist` directory inside your project folder. You can access it via your Linux distribution or from Windows under the corresponding `/mnt/c/` path.
+
+### Step 6: Optional - Copy the Executable to Windows
+1. **Copy the executable**:
+   If you need to copy the executable back to your Windows filesystem, you can use the `cp` command. For example:
+   ```sh
+   cp /path/to/your/executable /mnt/c/path/to/destination
+   ```
+
+This process will allow you to build a Linux executable using PyInstaller from a Windows 11 environment with WSL.

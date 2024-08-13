@@ -2,12 +2,13 @@ from PyQt5.QtWidgets import QDialog, QLineEdit, QVBoxLayout, QCheckBox, QComboBo
 
 
 class HotkeyDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, activeCheckedDefault = True):
         super(HotkeyDialog, self).__init__(parent)
         self.setWindowTitle("Hotkey")
 
         self.line_edit = QLineEdit()
         self.check_box = QCheckBox()
+        self.check_box.setChecked(activeCheckedDefault)
         self.combo_box = QComboBox()
         comboItems =["F"+str(n+1) for n in range(12)]
         comboItems.insert(0, "None")

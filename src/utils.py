@@ -107,14 +107,14 @@ def openSSH(ip: str):
     if sys.platform == 'win32':
         os.system(f"start cmd /k ssh {ip}")
     else:
-        os.system(f"gnome-terminal -- bash -c 'ssh {ip}; exec bash'")
+        os.system(f"gnome-terminal -- bash -c 'ssh {ip}'")
 #gnome-terminal -- bash -c "ssh {ip}; exec bash"
 
 
 def openCSSH(ips: List[str]):
     print(ips)
     if sys.platform == 'linux':
-        os.system(f"gnome-terminal -- bash -c 'cssh {' '.join(ips)}; exec bash'")
+        os.system(f"gnome-terminal -- bash -c 'cssh {' '.join(ips)}'")
 
 
 def get_json_file_path():

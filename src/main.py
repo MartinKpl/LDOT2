@@ -95,6 +95,8 @@ class MainWindow(QtWidgets.QMainWindow):
             for hotkey in read_json()["hotkeys"]:
                 if str(hotkey[2]).lower() == event.name.lower() and hotkey[1]:
                     print(hotkey[2] + "pressed")
+                    self.controller.press(keyboard.Key.backspace) # to remove the '~' that may be generated when pressing certain fn key
+                    self.controller.release(keyboard.Key.backspace)
                     self.controller.type(hotkey[0])
         except Exception as e:
             print(f"error: {e}")
@@ -130,7 +132,7 @@ class MainWindow(QtWidgets.QMainWindow):
         width = self.table.verticalHeader().width() + self.table.horizontalHeader().length() + self.table.frameWidth() * 2 + 40
         height = self.table.horizontalHeader().height() + self.table.verticalHeader().length() + self.table.frameWidth() * 2 + 20
         # self.setMinimumSize(width, height if height < 920 else 920)
-        self.resize(width+150, height if height < 920 else 920)
+        self.resize(width+150, 920) #height if height < 920 else 920
 
     def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection):
         for index in selected.indexes():
