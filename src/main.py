@@ -4,9 +4,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QItemSelection, QModelIndex
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 from pynput import keyboard
+from pyqtspinner import WaitingSpinner
+
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from Nyxquery import Nyxquery
 from TableModel import TableModel
 from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json
 from HotkeyWindow import HotkeyWindow
@@ -60,7 +63,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.table.doubleClicked.connect(self.startSingleConnection)
 
+        self.spinner = WaitingSpinner(self, True, True)
+
         layout.addWidget(self.table)
+        layout.addWidget(self.spinner)
+
+        # self.spinner.start()
 
         lowerLayout = QHBoxLayout()
 
@@ -82,6 +90,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(widget)
 
         self.adjustWindowSize()
+
+        self.nyxquery = Nyxquery()
+        self.nyxquery.site_ips_fetched.connect(self.siteIpsLoaded)
+        self.nyxquery.sites_fetched.connect(self.siteIpsLoaded)
 
         self.controller = keyboard.Controller()
         self.listener = keyboard.Listener(on_press=self.onKeyPress)
@@ -116,13 +128,29 @@ class MainWindow(QtWidgets.QMainWindow):
         self.w.show()
 
     def siteComboChanged(self, index):
+        self.spinner.start()
         print(self.sites[index])
         self.site = self.sites[index]
-        self.data = getSiteIps(self.site)
+
+        if self.nyxquery.isRunning():
+            print("Thread already running!")
+            self.nyxquery.terminate()
+        # self.data = getSiteIps(self.site)
+        self.nyxquery.getSiteIps(self.site)
+
+        # self.wholeData = self.data
+        # self.model = TableModel(self.data, MAIN_TABLE_HEADER)
+        # self.table.setModel(self.model)
+
+    def siteIpsLoaded(self, ips):
+        self.spinner.stop()
+        self.data = ips
         self.wholeData = self.data
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
+    def sitesLoaded(self, data):
+        pass
     def filterMachines(self, s):
         self.data = filterIps(self.wholeData, s)
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
