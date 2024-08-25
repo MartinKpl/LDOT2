@@ -74,6 +74,9 @@ class GrepWindow(QMainWindow):
         # Rest
         self.result = ""
         self.resultLabel = QLabel(self.result)
+        self.resultLabel.setAlignment(Qt.AlignCenter)
+        self.resultLabel.setTextInteractionFlags(Qt.TextSelectableByMouse)
+
         mainLayout.addWidget(self.resultLabel)
 
         mainWidget = QWidget()
