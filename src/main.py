@@ -6,9 +6,9 @@ from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
 from pynput import keyboard
 from pyqtspinner import WaitingSpinner
 
-
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from GrepWindow import GrepWindow
 from Nyxquery import Nyxquery
 from TableModel import TableModel
 from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json
@@ -72,12 +72,16 @@ class MainWindow(QtWidgets.QMainWindow):
 
         lowerLayout = QHBoxLayout()
 
+        grepButton = QtWidgets.QPushButton("Grep")
+        grepButton.clicked.connect(self.openGrepWindow)
+
         hotkeysButton = QtWidgets.QPushButton("Hotkeys")
         hotkeysButton.clicked.connect(self.openHotkeyWindow)
 
         newPSButton = QtWidgets.QPushButton("New PS")
         newPSButton.clicked.connect(self.startParallelSession)
 
+        lowerLayout.addWidget(grepButton)
         lowerLayout.addWidget(hotkeysButton)
         lowerLayout.addWidget(newPSButton)
 
@@ -126,6 +130,10 @@ class MainWindow(QtWidgets.QMainWindow):
     def openHotkeyWindow(self):
         self.w = HotkeyWindow()
         self.w.show()
+
+    def openGrepWindow(self):
+        self.grepWindow = GrepWindow()
+        self.grepWindow.show()
 
     def siteComboChanged(self, index):
         self.spinner.start()
