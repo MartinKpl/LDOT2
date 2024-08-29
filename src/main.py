@@ -33,10 +33,10 @@ class MainWindow(QtWidgets.QMainWindow):
         upperLayout = QHBoxLayout()
         upperLayout.addWidget(combo, 50)
 
-        lineEdit = QtWidgets.QLineEdit()
-        lineEdit.textChanged.connect(self.filterMachines)
+        self.lineEdit = QtWidgets.QLineEdit()
+        self.lineEdit.textChanged.connect(self.filterMachines)
 
-        upperLayout.addWidget(lineEdit, 50)
+        upperLayout.addWidget(self.lineEdit, 50)
 
         upperWidget = QtWidgets.QWidget()
         upperWidget.setLayout(upperLayout)
@@ -143,12 +143,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.nyxquery.isRunning():
             print("Thread already running!")
             self.nyxquery.terminate()
-        # self.data = getSiteIps(self.site)
-        self.nyxquery.getSiteIps(self.site)
 
-        # self.wholeData = self.data
-        # self.model = TableModel(self.data, MAIN_TABLE_HEADER)
-        # self.table.setModel(self.model)
+        self.nyxquery.getSiteIps(self.site)
+        self.lineEdit.setText("")
 
     def siteIpsLoaded(self, ips):
         self.spinner.stop()

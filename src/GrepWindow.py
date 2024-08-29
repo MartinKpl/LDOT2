@@ -27,7 +27,7 @@ class GrepWindow(QMainWindow):
         self.sensitive = True
         self.pattern = " "
         self.result = ""
-        self.date = QDateTime.currentDateTime().toString("MMdd")
+        self.date = QDateTime.currentDateTime().toString("yyyyMMdd")
         self.less = True
 
         mainLayout = QVBoxLayout()
@@ -59,6 +59,7 @@ class GrepWindow(QMainWindow):
         self.dateEdit = QDateEdit()
         self.dateEdit.setCalendarPopup(True)
         self.dateEdit.setDateTime(QDateTime.currentDateTime())
+        self.dateEdit.setDisplayFormat("dd/MM/yyyy")
         self.dateEdit.dateChanged.connect(self.dateChanged)
 
         mainLayout.addWidget(QLabel("Date:"))
@@ -115,7 +116,7 @@ class GrepWindow(QMainWindow):
         self.updateResult(pattern, self.date)
 
     def dateChanged(self, date: QDate):
-        self.updateResult(self.pattern, date.toString("MMdd"))
+        self.updateResult(self.pattern, date.toString("yyyyMMdd"))
 
     def lessChanged(self, index):
         self.less = index == 2
@@ -125,7 +126,12 @@ class GrepWindow(QMainWindow):
         self.pattern = pattern if pattern != "" else self.pattern
         self.date = date if date != "" else self.date
 
-        self.result = f"{self.grepOptions[self.grepOptionIndex]} {'-i' if self.sensitive else ''} '{self.pattern}' *{self.date}-* {'| less' if self.less else ''}"
+        if self.grepOptions[self.grepOptionIndex] == 'zstdgrep':
+            processedDate = f"{self.date[4:]}-*"
+        else:
+            processedDate = f"{self.date[:4]}-{self.date[4:6]}-{self.date[6:8]}.gz"
+
+        self.result = f"{self.grepOptions[self.grepOptionIndex]} {'-i' if self.sensitive else ''} '{self.pattern}' *{processedDate} {'| less' if self.less else ''}"
         self.resultLabel.setText(self.result)
 
     def okayClicked(self):
