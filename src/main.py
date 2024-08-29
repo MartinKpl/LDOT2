@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from GrepWindow import GrepWindow
 from Nyxquery import Nyxquery
+from TableView import TableView
 from TableModel import TableModel
 from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json
 from HotkeyWindow import HotkeyWindow
@@ -46,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.data = getSiteIps(self.site)
         self.wholeData = self.data
 
-        self.table = QtWidgets.QTableView()
+        self.table = TableView(self.startParallelSession)
 
         self.model = TableModel(self.data, ["IP", "Name"])
         self.table.setModel(self.model)
@@ -121,11 +122,14 @@ class MainWindow(QtWidgets.QMainWindow):
         ip = self.data[index.row()][0]
         openSSH(ip)
 
-    def startParallelSession(self):
-        selected = self.table.selectedIndexes()
+    def startParallelSession(self, selectedIndexes: list[QModelIndex] = []):
+        selected = self.table.selectedIndexes() if len(selectedIndexes) == 0 else selectedIndexes
 
         if len(selected) > 0:
-            openCSSH(list(set([self.data[index.row()][0] for index in selected])))
+            if len(selected) > 1:
+                openCSSH(list(set([self.data[index.row()][0] for index in selected])))
+            else:  # len == 1
+                openSSH(self.data[selected[0].row()][0])
 
     def openHotkeyWindow(self):
         self.w = HotkeyWindow()
