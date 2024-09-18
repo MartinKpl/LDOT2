@@ -26,14 +26,12 @@ def resource_path(relative_path):
 
 
 def nyxquery_site_ips_json(site: str):
-    json_file_path = resource_path("nyxquery-examples/ips_example.json")
     json_file_path = "nyxquery-examples/ips_example.json" #resource_path("nyxquery-examples/ips_example.json")
     with open(json_file_path, "r") as f:
         return f.read()
 
 
 def nyxquery_sites_json():
-    json_file_path = resource_path("nyxquery-examples/sitelist.json")
     json_file_path = "nyxquery-examples/sitelist.json" #resource_path("nyxquery-examples/sitelist.json")
     with open(json_file_path, "r") as f:
         return f.read()
