@@ -107,6 +107,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def onKeyPress(self, event):
         try:
             if isinstance(event, keyboard.Key) and event.name[0] != "f":
+            if not hasattr(event, 'name') or (isinstance(event, keyboard.Key) and event.name[0] != "f"):
                 return
 
             for hotkey in read_json()["hotkeys"]:
