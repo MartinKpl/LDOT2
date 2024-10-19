@@ -28,11 +28,13 @@ class SCPSettingsWindow(QMainWindow):
         confRSA = ""
         confUsername = ""
         confDownload = ""
+        confHotkey = "None"
 
         if "scpConf" in self.data:
-            confRSA = self.data["scpConf"]["rsaPath"]
-            confUsername = self.data["scpConf"]["username"]
-            confDownload = self.data["scpConf"]["downloadPath"]
+            confRSA = self.data["scpConf"].get("rsaPath", "")
+            confUsername = self.data["scpConf"].get("username", "")
+            confDownload = self.data["scpConf"].get("downloadPath", "")
+            confHotkey = self.data["scpConf"].get("hotkey", "None")
 
         mainLayout = QVBoxLayout()
 
@@ -74,6 +76,20 @@ class SCPSettingsWindow(QMainWindow):
 
         mainLayout.addLayout(downloadRowLayout)
 
+        #Hotkey
+        hotkeyRowLayout = QHBoxLayout()
+        hotkeyLabel = QLabel("Hotkey: ")
+        self.combo_box = QComboBox()
+        comboItems =["F"+str(n+1) for n in range(12)]
+        comboItems.insert(0, "None")
+        self.combo_box.addItems(comboItems)
+        self.combo_box.setCurrentIndex(comboItems.index(confHotkey))
+
+        hotkeyRowLayout.addWidget(hotkeyLabel)
+        hotkeyRowLayout.addWidget(self.combo_box)
+
+        mainLayout.addLayout(hotkeyRowLayout)
+
         # Buttons
         okButton = QPushButton("Ok")
         okButton.clicked.connect(self.okayClicked)
@@ -110,7 +126,8 @@ class SCPSettingsWindow(QMainWindow):
         scpConf = {
             "rsaPath": self.rsaInput.text(),
             "username": self.usernameInput.text(),
-            "downloadPath": self.downloadInput.text()
+            "downloadPath": self.downloadInput.text(),
+            "hotkey": self.combo_box.currentText()
         }
 
         self.data["scpConf"] = scpConf

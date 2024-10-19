@@ -1,8 +1,12 @@
 import json, os, sys
 import subprocess
+import time
 from typing import List
 
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QApplication
+from pynput import keyboard
+from pynput.keyboard import Controller
 
 class Machine:
     def __init__(self, code, ip, name):
@@ -36,7 +40,7 @@ def nyxquery_sites_json():
     with open(json_file_path, "r") as f:
         return f.read()
 
-
+lastRawIps = {}
 def getSiteIps(site: str) -> list:
     use_mock = os.getenv('USE_MOCK', 'false').lower() == 'true'
     ips = []
@@ -47,6 +51,8 @@ def getSiteIps(site: str) -> list:
     else:
         result = subprocess.run(f"nyxquery --site {site} --json", shell=True, capture_output=True, text=True)
         rawIps = json.loads(result.stdout)
+
+    lastRawIps[site] = rawIps
 
     for name in rawIps:
         cleanName = name.split(".")[0]
@@ -158,3 +164,69 @@ def write_json(data):
             json.dump(data, file, indent=4)
     except IOError as e:
         print(f"Error writing to file {file_path}: {e}")
+
+
+def doSCP(data: list | dict, controller: Controller, site: str):
+    '''
+            "rsaPath": self.rsaInput.text(),
+            "username": self.usernameInput.text(),
+            "downloadPath": self.downloadInput.text(),
+            "hotkey": self.combo_box.currentText()
+            scp -i /home/m.kaplan/m.kaplan_PROD.rsa m.kaplan@extstg3-ums-privil-ase-01.ptstaging.ptec:/opt/local/tmp/server.log.359.20240513-115841-125.zst /home/m.kaplan/
+    '''
+    cb = QApplication.clipboard()
+    filename = cb.text(mode=cb.Selection)
+    if filename == "":
+        filename = cb.text(mode=cb.Clipboard)
+        if filename == "":
+            print("Select the file to do the SCP to")
+            return
+
+    fqdn = getFQDN(site)
+    print("FQDN: ", fqdn)
+
+    controller.press(keyboard.Key.backspace) # to remove the '~' that may be generated when pressing certain fn key
+    controller.release(keyboard.Key.backspace)
+    controller.press('q') #get out of less
+    controller.release('q')
+    controller.press(keyboard.Key.backspace)
+    controller.release(keyboard.Key.backspace)
+
+    controller.type(f"cp {filename} /opt/local/tmp/")
+    controller.press(keyboard.Key.enter)
+    time.sleep(0.1)
+    controller.release(keyboard.Key.enter)
+    time.sleep(0.2)
+    controller.type(f"chmod 755 /opt/local/tmp/{filename}")
+    controller.press(keyboard.Key.enter)
+    time.sleep(0.1)
+    controller.release(keyboard.Key.enter)
+
+    command = f"scp -i {data.get('rsaPath','')} {data.get('username','')}@{fqdn}:/opt/local/tmp/{filename} {data.get('downloadPath','')}"
+    os.system(f"gnome-terminal -- bash -c '{command}'")
+
+def getFQDN(site: str)->str:
+    '''
+    WM_NAME(STRING) = "CSSH: 10.207.193.68"
+
+    WM_NAME(STRING) = "m.kaplan@mitmega-ums-privil-peko-01:~"
+    '''
+    result = subprocess.run(f"xprop -id $(xprop -root 32x '\t$0' _NET_ACTIVE_WINDOW | cut -f 2) WM_NAME", shell=True, capture_output=True, text=True)
+    windowName = result.stdout
+
+    if "CSS" in windowName:
+        windowName = windowName[windowName.index("CSSH: ")+len("CSSH: "):-1]
+
+        for name in lastRawIps[site]:
+            if lastRawIps[site][name]["ip"] == windowName:
+                return lastRawIps[site][name]["fqdn"]
+    else: #from ssh
+        start = windowName.index('@') + 1
+        end = windowName.index(':', start)
+        windowName = windowName[start:end]
+
+        for name in lastRawIps[site]:
+            if windowName in name:
+                return lastRawIps[site][name]["fqdn"]
+
+    return ""

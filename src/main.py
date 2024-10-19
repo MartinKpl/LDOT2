@@ -13,7 +13,7 @@ from GrepWindow import GrepWindow
 from Nyxquery import Nyxquery
 from TableView import TableView
 from TableModel import TableModel
-from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json
+from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json, doSCP
 from HotkeyWindow import HotkeyWindow
 
 MAIN_TABLE_HEADER = ["Ip", "Name"]
@@ -122,8 +122,12 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             if not hasattr(event, 'name') or (isinstance(event, keyboard.Key) and event.name[0] != "f"):
                 return
+            data = read_json()
+            if data["scpConf"].get("hotkey", "").lower() == event.name.lower():
+                doSCP(data["scpConf"], self.controller, self.site)
+                return
 
-            for hotkey in read_json()["hotkeys"]:
+            for hotkey in data["hotkeys"]:
                 if str(hotkey[2]).lower() == event.name.lower() and hotkey[1]:
                     print(hotkey[2] + "pressed")
                     self.controller.press(keyboard.Key.backspace) # to remove the '~' that may be generated when pressing certain fn key
@@ -198,8 +202,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def scp(self):
         cb = QApplication.clipboard()
-        print("Clipboard Text: ", cb.text(mode=cb.Clipboard))
-        print("Selection Text: ", cb.text(mode=cb.Selection))
+        # print("Clipboard Text: ", cb.text(mode=cb.Clipboard))
+        # print("Selection Text: ", cb.text(mode=cb.Selection))
 
     def closeEvent(self, event):
         # Unhook all key listeners when closing the window
