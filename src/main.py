@@ -1,13 +1,14 @@
 import sys, os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt, QItemSelection, QModelIndex
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout
+from PyQt5.QtCore import Qt, QItemSelection, QModelIndex, QSize
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QToolBar, QAction
 from pynput import keyboard
 from pyqtspinner import WaitingSpinner
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from SCPSettingsWindow import SCPSettingsWindow
 from GrepWindow import GrepWindow
 from Nyxquery import Nyxquery
 from TableView import TableView
@@ -21,6 +22,14 @@ MAIN_TABLE_HEADER = ["Ip", "Name"]
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+
+        menu = self.menuBar()
+
+        scpConfigButtonAction = QAction("SCP settings", self)
+        scpConfigButtonAction.triggered.connect(self.openSCPSettingsWindow)
+
+        file_menu = menu.addMenu("File")
+        file_menu.addAction(scpConfigButtonAction)
 
         layout = QVBoxLayout()
 
@@ -73,6 +82,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         lowerLayout = QHBoxLayout()
 
+        scpButton = QtWidgets.QPushButton("SCP")
+        scpButton.clicked.connect(self.scp)
+
         grepButton = QtWidgets.QPushButton("Grep")
         grepButton.clicked.connect(self.openGrepWindow)
 
@@ -80,8 +92,10 @@ class MainWindow(QtWidgets.QMainWindow):
         hotkeysButton.clicked.connect(self.openHotkeyWindow)
 
         newPSButton = QtWidgets.QPushButton("New PS")
-        newPSButton.clicked.connect(self.startParallelSession)
+        # newPSButton.clicked.connect(self.startParallelSession)
+        newPSButton.clicked.connect(lambda: self.startParallelSession())
 
+        lowerLayout.addWidget(scpButton)
         lowerLayout.addWidget(grepButton)
         lowerLayout.addWidget(hotkeysButton)
         lowerLayout.addWidget(newPSButton)
@@ -139,6 +153,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.grepWindow = GrepWindow()
         self.grepWindow.show()
 
+    def openSCPSettingsWindow(self):
+        self.scpWindow = SCPSettingsWindow()
+        self.scpWindow.show()
+
     def siteComboChanged(self, index):
         self.spinner.start()
         print(self.sites[index])
@@ -177,6 +195,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for index in deselected.indexes():
             print(f'Deselected: row {index.row()}, column {index.column()}, value: {index.data()}')
+
+    def scp(self):
+        cb = QApplication.clipboard()
+        print("Clipboard Text: ", cb.text(mode=cb.Clipboard))
+        print("Selection Text: ", cb.text(mode=cb.Selection))
 
     def closeEvent(self, event):
         # Unhook all key listeners when closing the window
