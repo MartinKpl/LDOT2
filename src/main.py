@@ -31,17 +31,21 @@ class MainWindow(QtWidgets.QMainWindow):
         file_menu = menu.addMenu("File")
         file_menu.addAction(scpConfigButtonAction)
 
+        self.nyxquery = Nyxquery()
+        self.nyxquery.site_ips_fetched.connect(self.siteIpsLoaded)
+        self.nyxquery.sites_fetched.connect(self.sitesLoaded)
+
         layout = QVBoxLayout()
 
-        combo = QtWidgets.QComboBox()
-        self.sites = getSites()
+        self.combo = QtWidgets.QComboBox()
+        self.sites = [""]#getSites()
         self.site = self.sites[0]
-        combo.addItems(self.sites)
-        make_combo_box_searchable(combo)
-        combo.currentIndexChanged.connect(self.siteComboChanged)
+        self.combo.addItems(self.sites)
+        make_combo_box_searchable(self.combo)
+        self.combo.currentIndexChanged.connect(self.siteComboChanged)
 
         upperLayout = QHBoxLayout()
-        upperLayout.addWidget(combo, 50)
+        upperLayout.addWidget(self.combo, 50)
 
         self.lineEdit = QtWidgets.QLineEdit()
         self.lineEdit.textChanged.connect(self.filterMachines)
@@ -53,7 +57,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         layout.addWidget(upperWidget)
 
-        self.data = getSiteIps(self.site)
+        self.data = [["", ""]]#getSiteIps(self.site)
         self.wholeData = self.data
 
         self.table = TableView(self.startParallelSession)
@@ -104,13 +108,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.adjustWindowSize()
 
-        self.nyxquery = Nyxquery()
-        self.nyxquery.site_ips_fetched.connect(self.siteIpsLoaded)
-        self.nyxquery.sites_fetched.connect(self.siteIpsLoaded)
-
         self.controller = keyboard.Controller()
         self.listener = keyboard.Listener(on_press=self.onKeyPress)
         self.listener.start()
+        self.loadSites()
 
     def onKeyPress(self, event):
         try:
@@ -161,8 +162,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.site = self.sites[index]
 
         if self.nyxquery.isRunning():
-            print("Thread already running!")
-            self.nyxquery.terminate()
+            print("Thread already running! siteComboChanged")
+            return #self.nyxquery.terminate()
 
         self.nyxquery.getSiteIps(self.site)
         self.lineEdit.setText("")
@@ -173,6 +174,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.wholeData = self.data
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
+
+    def loadSites(self):
+        self.spinner.start()
+
+        if self.nyxquery.isRunning():
+            print("Thread already running!")
+            return #self.nyxquery.terminate()
+
+        self.nyxquery.getSites()
+        self.lineEdit.setText("")
+
+    def sitesLoaded(self, sites):
+        self.spinner.stop()
+        self.sites = sites
+        self.site = self.sites[0]
+        self.combo.clear()
+        self.combo.addItems(self.sites)
+        self.nyxquery.exit()
+        # self.combo.setCurrentIndex(0)
+
+        # self.siteComboChanged(0)
 
     def filterMachines(self, s):
         self.data = filterIps(self.wholeData, s)

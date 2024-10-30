@@ -19,11 +19,11 @@ class Nyxquery(QThread):
             self.site_ips_fetched.emit(ips)
         else:
             sites = getSites()
-            print("Ips fetched successfully!")
+            print("Sites fetched successfully!")
             self.sites_fetched.emit(sites)
 
     def getSites(self):
-        self.sites_fetched.emit("Data has been fetched successfully!")
+        self.start()
         self.isGetIps = False
     def getSiteIps(self, site):
        self.site = site
