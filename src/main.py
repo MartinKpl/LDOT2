@@ -78,12 +78,7 @@ class MainWindow(QtWidgets.QMainWindow):
         layout.addWidget(self.table)
         layout.addWidget(self.spinner)
 
-        # self.spinner.start()
-
         lowerLayout = QHBoxLayout()
-
-        scpButton = QtWidgets.QPushButton("SCP")
-        scpButton.clicked.connect(self.scp)
 
         grepButton = QtWidgets.QPushButton("Grep")
         grepButton.clicked.connect(self.openGrepWindow)
@@ -95,7 +90,6 @@ class MainWindow(QtWidgets.QMainWindow):
         # newPSButton.clicked.connect(self.startParallelSession)
         newPSButton.clicked.connect(lambda: self.startParallelSession())
 
-        lowerLayout.addWidget(scpButton)
         lowerLayout.addWidget(grepButton)
         lowerLayout.addWidget(hotkeysButton)
         lowerLayout.addWidget(newPSButton)
@@ -180,8 +174,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
 
-    def sitesLoaded(self, data):
-        pass
     def filterMachines(self, s):
         self.data = filterIps(self.wholeData, s)
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
@@ -210,7 +202,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.listener.stop()
         event.accept()
 
-
+print("Starting LDOT2")
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
 window.show()
