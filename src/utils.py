@@ -46,6 +46,7 @@ def getSiteIps(site: str) -> list:
     ips = []
 
     if use_mock:
+        time.sleep(2)
         print("Using mock for nyxquery")
         rawIps = json.loads(nyxquery_site_ips_json(site))
     else:
@@ -56,6 +57,10 @@ def getSiteIps(site: str) -> list:
 
     for name in rawIps:
         cleanName = name.split(".")[0]
+
+        if "ums-privil-server" in cleanName:
+            cleanName = f"nova-{cleanName[-2:]}/{cleanName}"
+
         ips.append([rawIps[name]["ip"], cleanName])
 
     return ips
@@ -81,6 +86,7 @@ def getSites():
     rawSites = []
 
     if use_mock:
+        time.sleep(2)
         rawSites = json.loads(nyxquery_sites_json())
     else:
         result = subprocess.run(f"nyxquery --site-list --json", shell=True, capture_output=True, text=True)
