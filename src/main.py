@@ -202,10 +202,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.table.setModel(self.model)
 
     def adjustWindowSize(self):
-        width = self.table.verticalHeader().width() + self.table.horizontalHeader().length() + self.table.frameWidth() * 2 + 40
-        height = self.table.horizontalHeader().height() + self.table.verticalHeader().length() + self.table.frameWidth() * 2 + 20
+        # width = self.table.verticalHeader().width() + self.table.horizontalHeader().length() + self.table.frameWidth() * 2 + 40
+        # height = self.table.horizontalHeader().height() + self.table.verticalHeader().length() + self.table.frameWidth() * 2 + 20
         # self.setMinimumSize(width, height if height < 920 else 920)
-        self.resize(width+150, 920) #height if height < 920 else 920
+        self.resize(480, 920) #height if height < 920 else 920
 
     def selectionChanged(self, selected: QItemSelection, deselected: QItemSelection):
         for index in selected.indexes():
@@ -213,11 +213,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
         for index in deselected.indexes():
             print(f'Deselected: row {index.row()}, column {index.column()}, value: {index.data()}')
-
-    def scp(self):
-        cb = QApplication.clipboard()
-        # print("Clipboard Text: ", cb.text(mode=cb.Clipboard))
-        # print("Selection Text: ", cb.text(mode=cb.Selection))
 
     def closeEvent(self, event):
         # Unhook all key listeners when closing the window

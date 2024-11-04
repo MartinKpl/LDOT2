@@ -57,6 +57,10 @@ def getSiteIps(site: str) -> list:
 
     for name in rawIps:
         cleanName = name.split(".")[0]
+
+        if "ums-privil-server" in cleanName:
+            cleanName = f"nova-{cleanName[-2:]}/{cleanName}"
+
         ips.append([rawIps[name]["ip"], cleanName])
 
     return ips
