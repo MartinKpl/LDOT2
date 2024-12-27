@@ -2,7 +2,7 @@ import sys, os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QItemSelection, QModelIndex, QSize
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QToolBar, QAction
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QToolBar, QAction, QMessageBox
 from pynput import keyboard
 from pyqtspinner import WaitingSpinner
 
@@ -84,6 +84,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         lowerLayout = QHBoxLayout()
 
+        addSSH = QtWidgets.QPushButton("Add SSH")
+        addSSH.clicked.connect(self.addSSH)
+
         grepButton = QtWidgets.QPushButton("Grep")
         grepButton.clicked.connect(self.openGrepWindow)
 
@@ -94,6 +97,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # newPSButton.clicked.connect(self.startParallelSession)
         newPSButton.clicked.connect(lambda: self.startParallelSession())
 
+        lowerLayout.addWidget(addSSH)
         lowerLayout.addWidget(grepButton)
         lowerLayout.addWidget(hotkeysButton)
         lowerLayout.addWidget(newPSButton)
@@ -151,6 +155,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def openGrepWindow(self):
         self.grepWindow = GrepWindow()
         self.grepWindow.show()
+
+    def addSSH(self):
+        data = read_json()
+        rsaPath = data["scpConf"].get("rsaPath")
+        if rsaPath is None or rsaPath == "":
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText("No RSA key set")
+            msg.setInformativeText('No RSA key file path has been set. To do so, set it up in File->SCP Settings->RSA file')
+            msg.setWindowTitle("Error")
+            msg.setMinimumSize(600,200)
+            msg.exec_()
+        else:
+            os.system(f"gnome-terminal -- bash -c 'ssh-add {rsaPath}'")
 
     def openSCPSettingsWindow(self):
         self.scpWindow = SCPSettingsWindow()
