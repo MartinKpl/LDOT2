@@ -221,7 +221,7 @@ def getFQDN(site: str)->str:
     windowName = result.stdout
 
     if "CSS" in windowName:
-        windowName = windowName[windowName.index("CSSH: ")+len("CSSH: "):-1]
+        windowName = windowName[windowName.index("CSSH: ")+len("CSSH: "):-2]
 
         for name in lastRawIps[site]:
             if lastRawIps[site][name]["ip"] == windowName:
