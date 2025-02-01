@@ -59,9 +59,9 @@ def getSiteIps(site: str) -> list:
         cleanName = name.split(".")[0]
 
         if "ums-privil-server" in cleanName:
-            cleanName = f"nova-{cleanName[-2:]}/{cleanName}"
+            cleanName = f"nova{cleanName[-2:]}/{cleanName}"
 
-        ips.append([rawIps[name]["ip"], cleanName])
+        ips.append([rawIps[name]["ip"], cleanName, rawIps[name]["roles"]])
 
     return ips
 
@@ -69,9 +69,9 @@ def getSiteIps(site: str) -> list:
 def filterIps(rawIps: list, filter: str = "") -> list:
     #print(f"Filtering {filter}")
     ips = []
-    for pair in rawIps:
-        ip = pair[0]
-        name = pair[1]
+    for machine in rawIps:
+        ip = machine[0]
+        name = machine[1]
         if filter != "":
             if filter in name:
                 ips.append([ip, name])
@@ -80,6 +80,16 @@ def filterIps(rawIps: list, filter: str = "") -> list:
 
     return ips
 
+def filterIpsByRole(rawIps: list, role: str = "") -> list:
+    if role == "" or role == "All":
+        return rawIps
+
+    filteredIps = []
+    for machine in rawIps:
+        if role in machine[2]:
+            filteredIps.append(machine)
+
+    return filteredIps
 
 def getSites():
     use_mock = os.getenv('USE_MOCK', 'false').lower() == 'true'
@@ -96,6 +106,17 @@ def getSites():
     sites.sort()
 
     return sites
+
+
+def getRoles():
+    result = subprocess.run(f"nyxquery --roles", shell=True, capture_output=True, text=True)
+    rawRoles = result.stdout
+
+    roles = rawRoles.split("\n")
+
+    roles = ["All"] + sorted(roles, key=lambda x: (not "ims" in x, x))
+
+    return roles
 
 
 def make_combo_box_searchable(combo_box):
