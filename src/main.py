@@ -2,7 +2,7 @@ import sys, os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QItemSelection, QModelIndex, QSize
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QToolBar, QAction, QMessageBox
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QApplication, QToolBar, QAction, QMessageBox, QPushButton
 from pynput import keyboard
 from pyqtspinner import WaitingSpinner
 
@@ -15,6 +15,7 @@ from TableView import TableView
 from TableModel import TableModel
 from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json, doSCP
 from HotkeyWindow import HotkeyWindow
+from EditableButton import EditableButton
 
 MAIN_TABLE_HEADER = ["Ip", "Name"]
 
@@ -44,6 +45,7 @@ class MainWindow(QtWidgets.QMainWindow):
         make_combo_box_searchable(self.combo)
         self.combo.currentIndexChanged.connect(self.siteComboChanged)
 
+        headerLayout = QVBoxLayout()
         upperLayout = QHBoxLayout()
         upperLayout.addWidget(self.combo, 50)
 
@@ -52,10 +54,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
         upperLayout.addWidget(self.lineEdit, 50)
 
-        upperWidget = QtWidgets.QWidget()
-        upperWidget.setLayout(upperLayout)
+        headerLayout.addLayout(upperLayout)
 
-        layout.addWidget(upperWidget)
+        bottomLayout = QHBoxLayout()
+
+        self.editableButton1 = EditableButton(0, self.filterMachinesFromEditableButton)
+        self.editableButton2 = EditableButton(1, self.filterMachinesFromEditableButton)
+        self.editableButton3 = EditableButton(2, self.filterMachinesFromEditableButton)
+
+        bottomLayout.addWidget(self.editableButton1)
+        bottomLayout.addWidget(self.editableButton2)
+        bottomLayout.addWidget(self.editableButton3)
+
+        bottomLayout.setSpacing(0)
+        bottomLayout.setContentsMargins(0,0,0,0)
+
+        headerLayout.addLayout(bottomLayout)
+
+        headerWidget = QtWidgets.QWidget()
+        headerWidget.setLayout(headerLayout)
+
+        layout.addWidget(headerWidget)
 
         self.data = [["", ""]]#getSiteIps(self.site)
         self.wholeData = self.data
@@ -213,6 +232,30 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.combo.setCurrentIndex(0)
 
         # self.siteComboChanged(0)
+        self.loadRoles()
+
+
+    def loadRoles(self):
+        self.spinner.start()
+
+        if self.nyxquery.isRunning():
+            print("Thread already running! Waiting to get roles")
+            self.nyxquery.quit()
+            self.nyxquery.wait()
+
+        self.nyxquery.getRoles()
+
+    def rolesLoaded(self, roles):
+        self.spinner.stop()
+        self.roles = roles
+        self.role = self.roles[0]
+        self.rolesCombo.clear()
+        self.rolesCombo.addItems(self.roles)
+        self.nyxquery.exit()
+
+    def filterMachinesFromEditableButton(self, s):
+        self.lineEdit.setText(s)
+        self.filterMachines(s)
 
     def filterMachines(self, s):
         self.data = filterIps(self.wholeData, s)

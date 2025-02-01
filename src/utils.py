@@ -139,6 +139,25 @@ initializedData = []
 
 
 def read_json():
+    """
+    {
+        "hotkeys": [
+            [
+                "test", #text to paste
+                true, #active?
+                "F2" #hotkey
+            ],
+            ...
+        ],
+        "scpConf": {
+            "rsaPath": "",
+            "username": "m.kaplan",
+            "downloadPath": "/home/mkaplan/linprj/LDOT2/nyxquery-examples",
+            "hotkey": "F12"
+        },
+        "quickFilters: ["filter1", "filter2", "filter3"]
+    }
+    """
     # Ensure the directory exists
     file_path = get_json_file_path()
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
