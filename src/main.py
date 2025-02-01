@@ -13,7 +13,7 @@ from GrepWindow import GrepWindow
 from Nyxquery import Nyxquery
 from TableView import TableView
 from TableModel import TableModel
-from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json, doSCP
+from utils import getSiteIps, getSites, make_combo_box_searchable, openSSH, openCSSH, filterIps, read_json, doSCP, filterIpsByRole
 from HotkeyWindow import HotkeyWindow
 from EditableButton import EditableButton
 
@@ -35,6 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.nyxquery = Nyxquery()
         self.nyxquery.site_ips_fetched.connect(self.siteIpsLoaded)
         self.nyxquery.sites_fetched.connect(self.sitesLoaded)
+        self.nyxquery.roles_fetched.connect(self.rolesLoaded)
 
         layout = QVBoxLayout()
 
@@ -52,7 +53,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.lineEdit = QtWidgets.QLineEdit()
         self.lineEdit.textChanged.connect(self.filterMachines)
 
-        upperLayout.addWidget(self.lineEdit, 50)
+        self.rolesCombo = QtWidgets.QComboBox()
+        self.roles = [""]
+        self.role = self.roles[0]
+        self.rolesCombo.addItems(self.roles)
+        make_combo_box_searchable(self.rolesCombo)
+        self.rolesCombo.currentIndexChanged.connect(self.filterMachinesByRoles)
+
+        rightUpperLayout = QVBoxLayout()
+
+        rightUpperLayout.addWidget(self.lineEdit)
+        rightUpperLayout.addWidget(self.rolesCombo)
+        upperLayout.addLayout(rightUpperLayout, 50)
 
         headerLayout.addLayout(upperLayout)
 
@@ -199,13 +211,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.site = self.sites[index]
 
         if self.nyxquery.isRunning():
-            print("Thread already running! siteComboChanged")
-            return #self.nyxquery.terminate()
+            print("Thread already running! Waiting to get site's IPs")
+            self.nyxquery.quit()
+            self.nyxquery.wait()
 
         self.nyxquery.getSiteIps(self.site)
         self.lineEdit.setText("")
 
+    def filterMachinesByRoles(self, index):
+        if index < 0:
+            return
+        self.data = filterIpsByRole(self.wholeData, self.roles[index])
+        self.model = TableModel(self.data, MAIN_TABLE_HEADER)
+        self.table.setModel(self.model)
+
     def siteIpsLoaded(self, ips):
+        if self.nyxquery.isRunning():
+            self.nyxquery.quit()
+            self.nyxquery.wait()
         self.spinner.stop()
         self.data = ips
         self.wholeData = self.data
@@ -216,8 +239,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.spinner.start()
 
         if self.nyxquery.isRunning():
-            print("Thread already running!")
-            return #self.nyxquery.terminate()
+            print("Thread already running! Waiting to get sites")
+            self.nyxquery.quit()
+            self.nyxquery.wait()
 
         self.nyxquery.getSites()
         self.lineEdit.setText("")
@@ -228,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.site = self.sites[0]
         self.combo.clear()
         self.combo.addItems(self.sites)
-        self.nyxquery.exit()
+        # self.nyxquery.exit()
         # self.combo.setCurrentIndex(0)
 
         # self.siteComboChanged(0)
