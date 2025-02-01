@@ -6,7 +6,12 @@ from PyQt5.QtCore import Qt
 class TableModel(QtCore.QAbstractTableModel):
     def __init__(self, data, header: List[str] = []):
         super(TableModel, self).__init__()
-        self._data = data
+        parsedData = []
+
+        for row in data:
+            parsedData.append(row[:2])
+
+        self._data = parsedData
         self._header = header
 
     def data(self, index, role):
