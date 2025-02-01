@@ -44,7 +44,6 @@ class EditableButton(QWidget):
 
     def handle_button_click(self):
         """ Normal button click behavior (can be customized) """
-        print(f"Button '{self.button.text()}' clicked!")
         self.onClickHandler(self.button.text())
 
     def switch_to_edit(self):
