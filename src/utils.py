@@ -109,7 +109,7 @@ def getSites():
 
 
 def getRoles():
-    result = subprocess.run(f"nyxquery --roles", shell=True, capture_output=True, text=True)
+    result = subprocess.run(f"nyxquery --role-list", shell=True, capture_output=True, text=True)
     rawRoles = result.stdout
 
     roles = rawRoles.split("\n")
