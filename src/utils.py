@@ -1,7 +1,7 @@
 import json, os, sys
 import subprocess
 import time
-from typing import List
+from typing import List, TypedDict, NotRequired
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QApplication
@@ -14,6 +14,16 @@ class Machine:
         self.ip = ip
         self.name = name
 
+class Hotkey(TypedDict):
+    text: str
+    active: bool
+    hotkey: str
+    autoEnter: NotRequired[bool]
+
+class Config(TypedDict):
+    hotkeys: List[Hotkey]
+    scpConf: dict
+    quickFilters: List[str]
 
 def resource_path(relative_path):
     """ Get the absolute path to the resource, works for dev and for PyInstaller """
@@ -46,7 +56,7 @@ def getSiteIps(site: str) -> list:
     ips = []
 
     if use_mock:
-        time.sleep(2)
+        time.sleep(0.2)
         print("Using mock for nyxquery")
         rawIps = json.loads(nyxquery_site_ips_json(site))
     else:
@@ -96,7 +106,7 @@ def getSites():
     rawSites = []
 
     if use_mock:
-        time.sleep(2)
+        time.sleep(0.2)
         rawSites = json.loads(nyxquery_sites_json())
     else:
         result = subprocess.run(f"nyxquery --site-list --json", shell=True, capture_output=True, text=True)
@@ -163,11 +173,12 @@ def read_json():
     """
     {
         "hotkeys": [
-            [
-                "test", #text to paste
-                true, #active?
-                "F2" #hotkey
-            ],
+            {
+                text: "test", #text to paste
+                active: true, #active?
+                hotkey: "F2", #hotkey
+                autoenter: false, #autoenter
+            },
             ...
         ],
         "scpConf": {
@@ -193,7 +204,8 @@ def read_json():
     try:
         if not initializedData:
             with open(file_path, 'r') as file:
-                data = json.load(file)
+                data: Config = json.load(file)
+                print(data)
                 return data
         else:
             return initializedData

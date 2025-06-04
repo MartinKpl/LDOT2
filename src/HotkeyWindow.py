@@ -1,10 +1,12 @@
+from typing import List
+
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QDataWidgetMapper, QDialog, QHBoxLayout, QPushButton
 
 from HotkeysTable import HotkeysTable
 from HotkeyDialog import HotkeyDialog
-from utils import read_json, write_json
+from utils import read_json, write_json, Hotkey
 
 
 class HotkeyWindow(QMainWindow):
@@ -19,9 +21,9 @@ class HotkeyWindow(QMainWindow):
 
         self.table = QtWidgets.QTableView()
 
-        self.data = read_json()["hotkeys"]
+        self.data: List[Hotkey] = read_json()["hotkeys"]
 
-        self.model = HotkeysTable(self.data, ["Command", "Active", "Hotkey"])
+        self.model = HotkeysTable(self.data, ["Command", "Active", "Hotkey", "AutoEnter"])
         self.table.setModel(self.model)
 
         # Make the table expand to fill the window
@@ -62,15 +64,11 @@ class HotkeyWindow(QMainWindow):
 
     def showEditDialog(self, index):
         row = index.row()
-        row_data = [
-            self.data[row][0],  # Text column
-            self.data[row][1],  # Checkbox column
-            self.data[row][2]   # Combo column
-        ]
+        hotkey:Hotkey = self.data[row]
 
-        print(row_data)
+        print(hotkey)
 
-        dialog = HotkeyDialog(row_data, self)
+        dialog = HotkeyDialog(hotkey, self)
 
         dialog.resize(450, 250)
 
@@ -79,6 +77,7 @@ class HotkeyWindow(QMainWindow):
             self.model.setData(self.model.index(row, 0), newValues['text'], Qt.EditRole)
             self.model.setData(self.model.index(row, 1), newValues['active'], Qt.EditRole)
             self.model.setData(self.model.index(row, 2), newValues['hotkey'], Qt.EditRole)
+            self.model.setData(self.model.index(row, 3), newValues['autoEnter'], Qt.EditRole)
 
 
     def showNewHotkeyDialog(self):
@@ -91,7 +90,7 @@ class HotkeyWindow(QMainWindow):
         if dialog.exec_() == QDialog.Accepted:
             lastIndex = len(self.data) - 1
             self.model.setData(self.model.index(lastIndex, 0), dialog.line_edit.text(), Qt.EditRole)
-            self.model.setData(self.model.index(lastIndex, 1), dialog.check_box.isChecked(), Qt.EditRole)
+            self.model.setData(self.model.index(lastIndex, 1), dialog.activeCheckBox.isChecked(), Qt.EditRole)
             self.model.setData(self.model.index(lastIndex, 2), dialog.combo_box.currentText(), Qt.EditRole)
 
     def deleteNewHotkey(self):

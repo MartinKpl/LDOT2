@@ -154,16 +154,19 @@ class MainWindow(QtWidgets.QMainWindow):
             if not hasattr(event, 'name') or (isinstance(event, keyboard.Key) and event.name[0] != "f"):
                 return
             data = read_json()
-            if data["scpConf"].get("hotkey", "").lower() == event.name.lower():
+            if "scpConf" in data and data["scpConf"].get("hotkey", "").lower() == event.name.lower():
                 doSCP(data["scpConf"], self.controller, self.site)
                 return
 
             for hotkey in data["hotkeys"]:
-                if str(hotkey[2]).lower() == event.name.lower() and hotkey[1]:
-                    print(hotkey[2] + "pressed")
+                if str(hotkey["hotkey"]).lower() == event.name.lower() and hotkey["active"]:
+                    print(hotkey["hotkey"] + " pressed")
                     self.controller.press(keyboard.Key.backspace) # to remove the '~' that may be generated when pressing certain fn key
                     self.controller.release(keyboard.Key.backspace)
-                    self.controller.type(hotkey[0])
+                    self.controller.type(hotkey["text"])
+                    if hotkey["autoEnter"]:
+                        self.controller.press(keyboard.Key.enter)
+                        self.controller.release(keyboard.Key.enter)
         except Exception as e:
             print(f"error: {e}")
 
