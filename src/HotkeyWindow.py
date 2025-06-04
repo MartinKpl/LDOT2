@@ -61,17 +61,25 @@ class HotkeyWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def showEditDialog(self, index):
-        dialog = HotkeyDialog(self)
-        mapper = QDataWidgetMapper(dialog)
-        mapper.setModel(self.model)
-        mapper.addMapping(dialog.line_edit, 0)
-        mapper.addMapping(dialog.check_box, 1, b"checked")
-        mapper.addMapping(dialog.combo_box, 2)
-        mapper.setCurrentModelIndex(index)
+        row = index.row()
+        row_data = [
+            self.data[row][0],  # Text column
+            self.data[row][1],  # Checkbox column
+            self.data[row][2]   # Combo column
+        ]
+
+        print(row_data)
+
+        dialog = HotkeyDialog(row_data, self)
 
         dialog.resize(450, 250)
 
-        dialog.exec_()
+        if dialog.exec_() == dialog.Accepted:
+            newValues = dialog.getValues()
+            self.model.setData(self.model.index(row, 0), newValues['text'], Qt.EditRole)
+            self.model.setData(self.model.index(row, 1), newValues['active'], Qt.EditRole)
+            self.model.setData(self.model.index(row, 2), newValues['hotkey'], Qt.EditRole)
+
 
     def showNewHotkeyDialog(self):
         dialog = HotkeyDialog(self)

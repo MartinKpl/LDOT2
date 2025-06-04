@@ -51,6 +51,7 @@ class MainWindow(QtWidgets.QMainWindow):
         upperLayout.addWidget(self.combo, 50)
 
         self.lineEdit = QtWidgets.QLineEdit()
+        self.lineEdit.setFocusPolicy(Qt.StrongFocus)
         self.lineEdit.textChanged.connect(self.filterMachines)
 
         self.rolesCombo = QtWidgets.QComboBox()
@@ -206,7 +207,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scpWindow.show()
 
     def siteComboChanged(self, index):
-        self.spinner.start()
+        self.startSpinner()
         print(self.sites[index])
         self.site = self.sites[index]
 
@@ -234,9 +235,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.wholeData = self.data
         self.model = TableModel(self.data, MAIN_TABLE_HEADER)
         self.table.setModel(self.model)
+        QtCore.QTimer.singleShot(0, self.lineEdit.setFocus)
 
     def loadSites(self):
-        self.spinner.start()
+        self.startSpinner()
 
         if self.nyxquery.isRunning():
             print("Thread already running! Waiting to get sites")
@@ -260,7 +262,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
     def loadRoles(self):
-        self.spinner.start()
+        self.startSpinner()
 
         if self.nyxquery.isRunning():
             print("Thread already running! Waiting to get roles")
@@ -303,6 +305,10 @@ class MainWindow(QtWidgets.QMainWindow):
         # Unhook all key listeners when closing the window
         self.listener.stop()
         event.accept()
+
+    def startSpinner(self):
+        if not self.spinner.is_spinning:
+            self.spinner.start()
 
 print("Starting LDOT2")
 app = QtWidgets.QApplication(sys.argv)

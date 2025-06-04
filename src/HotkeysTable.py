@@ -39,7 +39,7 @@ class HotkeysTable(QtCore.QAbstractTableModel):
 
     def flags(self, index):
         if index.column() == 1:
-            return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable
+            return Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsUserCheckable
         return Qt.ItemIsSelectable | Qt.ItemIsEnabled # | Qt.ItemIsEditable
 
     def setData(self, index, value, role):
