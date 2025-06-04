@@ -227,6 +227,7 @@ def doSCP(data: list | dict, controller: Controller, site: str):
         if filename == "":
             print("Select the file to do the SCP to")
             return
+    filename = filename.strip()
 
     fqdn = getFQDN(site)
     print("FQDN: ", fqdn)
