@@ -165,8 +165,15 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.controller.release(keyboard.Key.backspace)
 
                     text = hotkey["text"].replace("{{paste}}", self.getClipboardText())
+                    index = text.find("{{$}}")
+                    text = text.replace("{{$}}", "")
 
                     self.controller.type(text)
+
+                    if index >= 0:
+                        for i in range(len(text)-index):
+                            self.controller.press(keyboard.Key.left)
+                            self.controller.release(keyboard.Key.left)
 
                     if hotkey["autoEnter"]:
                         self.controller.press(keyboard.Key.enter)
