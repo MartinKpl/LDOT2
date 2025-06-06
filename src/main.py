@@ -163,12 +163,24 @@ class MainWindow(QtWidgets.QMainWindow):
                     print(hotkey["hotkey"] + " pressed")
                     self.controller.press(keyboard.Key.backspace) # to remove the '~' that may be generated when pressing certain fn key
                     self.controller.release(keyboard.Key.backspace)
-                    self.controller.type(hotkey["text"])
+
+                    text = hotkey["text"].replace("{{paste}}", self.getClipboardText())
+
+                    self.controller.type(text)
+
                     if hotkey["autoEnter"]:
                         self.controller.press(keyboard.Key.enter)
                         self.controller.release(keyboard.Key.enter)
         except Exception as e:
             print(f"error: {e}")
+
+    def getClipboardText(self):
+        cb = QApplication.clipboard()
+        filename = cb.text(mode=cb.Selection)
+        if filename == "":
+            filename = cb.text(mode=cb.Clipboard)
+
+        return filename
 
     def startSingleConnection(self, index: QModelIndex) -> None:
         ip = self.data[index.row()][0]

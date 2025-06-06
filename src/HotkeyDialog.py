@@ -4,7 +4,15 @@ from src.utils import Hotkey
 
 
 class HotkeyDialog(QDialog):
-    def __init__(self, hotkey:Hotkey, parent=None):
+    def __init__(self, hotkey:Hotkey = None, parent=None):
+        if hotkey is None:
+            hotkey: Hotkey = {
+                "text": "",
+                "active": True,
+                "hotkey": "",
+                "autoEnter": False
+            }
+
         super(HotkeyDialog, self).__init__(parent)
         self.setWindowTitle("Hotkey")
 

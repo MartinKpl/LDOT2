@@ -58,7 +58,12 @@ class HotkeysTable(QtCore.QAbstractTableModel):
     def insertRows(self, row, count, parent=QModelIndex()):
         self.beginInsertRows(parent, row, row + count - 1)
         for _ in range(count):
-            self._data.insert(row, ["", False, ""])
+            self._data.insert(row, {
+                "text": "",
+                "active": True,
+                "hotkey": "",
+                "autoEnter": False
+            })
         self.endInsertRows()
 
         return True

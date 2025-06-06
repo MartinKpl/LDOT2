@@ -81,7 +81,7 @@ class HotkeyWindow(QMainWindow):
 
 
     def showNewHotkeyDialog(self):
-        dialog = HotkeyDialog(self)
+        dialog = HotkeyDialog(parent=self)
 
         dialog.resize(450, 250)
 
